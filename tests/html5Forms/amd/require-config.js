@@ -5,6 +5,6 @@ require.config({
     baseDir: 'amd/',
 
     paths: {
-        'html5forms': '../../../shared/js/amd/html5forms'
+        'html5forms': '../../../shared/js/amd'
     }
 });
