@@ -1,14 +1,22 @@
-define(
+!function (name, deps, definition) {
+    if (typeof define === 'function' && typeof define.amd === 'object') define(deps, definition);
+    else this.H5F[name] = definition();
+}('$wf2', 
 	[
 		'./event-helpers',
 		'./css',
+		'./feature-tests',
 		'require'
 	],
 	function(
 		EventHelpers,
 		css,
+		FeatureTests,
 		require
 	){
+		EventHelpers = EventHelpers || window.H5F.EventHelpers;
+		css = css || window.H5F.CSSHelpers;
+		FeatureTests = FeatureTests || window.H5F.FeatureTests;
 
 		/*
 		 * Web Forms 2.0 Cross-browser Implementation <http://code.google.com/p/webforms2/>
@@ -67,13 +75,13 @@ define(
 			isInitialized : false,
 			globalEvent: null,
 			
-			hasElementExtensions : (window.HTMLElement && HTMLElement.prototype),
-			hasGettersAndSetters : ($wf2.__defineGetter__ && $wf2.__defineSetter__),
+			hasElementExtensions : FeatureTests.elementExtensions,
+			hasGettersAndSetters : FeatureTests.gettersAndSetters,
 			
-			hasBadImplementation: navigator.userAgent.indexOf('WebKit') > 0,
+			hasBadImplementation: FeatureTests.badValidationImplementation,
 			
 			// WebKit less than 534 doesn't show validation UI - we need to check for this (from http://stackoverflow.com/questions/6030522/html5-form-validation-modernizr-safari)
-			hasNativeBubbles: navigator.userAgent.indexOf('WebKit') < 0 || parseInt(navigator.userAgent.match(/AppleWebKit\/([^ ]*)/)[1].split('.')[0])  > 534,
+			hasNativeBubbles: FeatureTests.nativeBubbles,
 			
 			callBeforeValidation : [],
 			callAfterValidation : [],

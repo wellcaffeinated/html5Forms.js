@@ -4,7 +4,10 @@
  * released under the MIT License:
  *   http://www.opensource.org/licenses/mit-license.php
  */
-define(function () {
+!function (name, definition) {
+    if (typeof define === 'function' && typeof define.amd === 'object') define(definition);
+    else this.H5F[name] = definition();
+}('CSSHelpers', function(){
 
 	var css = {};
 	

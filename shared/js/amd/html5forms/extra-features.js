@@ -1,12 +1,17 @@
-define(
+!function (name, deps, definition) {
+    if (typeof define === 'function' && typeof define.amd === 'object') define(deps, definition);
+    else this.H5F[name] = definition();
+}('ExtraFeatures',
 	[
-		'./css',
-		'./event-helpers'
+		'./event-helpers',
+		'./css'
 	],
 	function(
-		css,
-		EventHelpers
+		EventHelpers,
+		css
 	){
+		EventHelpers = EventHelpers || window.H5F.EventHelpers;
+		css = css || window.H5F.CSSHelpers;
 
 		var globalEvent = document.addEventListener?document.createEvent("HTMLEvents"):null;
 

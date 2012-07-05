@@ -13,8 +13,12 @@
  * Chagelog: 1.4: fix fireEvent to work correctly for IE9.
  *
  *******************************************************************************/
-define(function(){
-    
+!function (name, definition) {
+    if (typeof module !== 'undefined') module.exports = definition();
+    else if (typeof define === 'function' && typeof define.amd === 'object') define(definition);
+    else this.H5F[name] = definition();
+}('EventHelpers', function(){
+
     var me = {};
     
     var safariTimer;
