@@ -86,22 +86,26 @@
 
 		if (!scriptNode) return;
 
-		var inputSupport = Modernizr.inputtypes;
 		/* let's load the supporting scripts according to what is in data-webforms2-support */
-		var supportArray = scriptNode.getAttribute('data-webforms2-support');
-		var forceJSValidation = (scriptNode.getAttribute('data-webforms2-force-js-validation') == 'true');
-		var turnOffValidation = (scriptNode.getAttribute('data-webforms2-turn-off-validation') == 'true');
-		if (!supportArray) {
-			return;
-		} else if (trim(supportArray) == 'all') {
-			supportArray="validation,number,color,date,ouput,range,placeholder";
+		var supportArray = (scriptNode.getAttribute('data-webforms2-support') || 'validation,number,color,date,ouput,range,placeholder').split(',')
+			,forceJSValidation = (scriptNode.getAttribute('data-webforms2-force-js-validation') == 'true')
+			,turnOffValidation = (scriptNode.getAttribute('data-webforms2-turn-off-validation') == 'true')
+			,inputSupport = Modernizr.inputtypes
+			,toLoad
+			,callback
+			,loadHTML5Widgets = false
+			;
+
+		function loadScript(url, cb){
+
+			toLoad = toLoad || {};
+			callback = callback || {};
+
+			toLoad[url] = url;
+			if(cb){
+				callback[url] = cb;
+			}
 		}
-		
-		supportArray = supportArray.split(',');
-		var toLoad = [];
-		var toRunAfterLoad = [];
-		var loadHTML5Widgets = false;
-		
 		
 		for (var i=0, l = supportArray.length; i < l; i++) {
 
@@ -111,6 +115,7 @@
 				
 				case "validation":
 				case "autofocus":
+				
 					if (turnOffValidation) {
 						//me.turnOffNativeValidation();
 						me.EventHelpers.addPageLoadEvent('html5Forms.turnOffNativeValidation')
@@ -118,7 +123,10 @@
 				
 						if (!Modernizr.input.required || me.FeatureTests.badValidationImplementation || forceJSValidation) {
 							
-							toLoad = toLoad.push(scriptDir + 'webforms.js');
+							loadScript(scriptDir + 'webforms.js', function(){
+
+								me.$wf2.init();
+							});
 							
 							if (supportReq == 'autofocus') {
 								loadHTML5Widgets = true;
@@ -127,17 +135,21 @@
 						}
 					}
 					break;
+
 				case "number":
+
 					if (!inputSupport.number) {
-						toLoad = toLoad.concat([
-								scriptDir + '../../shared/css/number.css']);
+
+						loadScript(scriptDir + '../../shared/css/number.css');
 						loadHTML5Widgets = true;
 					}
 					break;
+
 				case "color":
+
 					if (!inputSupport.color) {
 						
-						toLoad = toLoad.concat([  scriptDir + '../../shared/js/jscolor/jscolor.js']);
+						loadScript(scriptDir + '../../shared/js/jscolor/jscolor.js');
 						
 						loadHTML5Widgets = true;
 					}	
@@ -145,8 +157,8 @@
 				
 				case "datetime":
 				case "date":
-					var lang = scriptNode.getAttribute('data-lang');
 					
+					var lang = scriptNode.getAttribute('data-lang');
 					
 					/* If data-lang is not set, or is set to an unsupported language, use English by default. */
 					if (!lang || 
@@ -156,16 +168,16 @@
 					}
 					
 					if (!inputSupport.date) {
-						toLoad = toLoad.concat([  
-								  scriptDir + '../../shared/js/jscalendar-1.0/calendar-win2k-1.css',
-								  scriptDir + '../../shared/js/jscalendar-1.0/calendar.js', 
-								  scriptDir + '../../shared/js/jscalendar-1.0/lang/calendar-' + lang + '.js', 
-								  scriptDir + '../../shared/js/jscalendar-1.0/calendar-setup.js']);
+						loadScript(scriptDir + '../../shared/js/jscalendar-1.0/calendar-win2k-1.css');
+						loadScript(scriptDir + '../../shared/js/jscalendar-1.0/calendar.js');
+						loadScript(scriptDir + '../../shared/js/jscalendar-1.0/lang/calendar-' + lang + '.js');
+						loadScript(scriptDir + '../../shared/js/jscalendar-1.0/calendar-setup.js');
 						loadHTML5Widgets = true;
 					}
 					break;
 					
 				case "output":
+					
 					if(!me.FeatureTests.supportsOutput) {
 						
 						loadHTML5Widgets = true;
@@ -173,74 +185,60 @@
 					break;
 				
 				case "range":
-				   /* yepnope({
-				    	load: ['ie6!' + scriptDir + '../../shared/css/slider.css']
-				   }); */
-				    
-					if(!inputSupport.range) {
-						toLoad = toLoad.concat([  scriptDir + '../../shared/css/slider.css',
-								  scriptDir + '../../shared/js/frequency-decoder.com/slider.js']);
+				   
+				   if(!inputSupport.range) {
+						loadScript(scriptDir + '../../shared/css/slider.css');
+						loadScript(scriptDir + '../../shared/js/frequency-decoder.com/slider.js', function(){
+
+							window.fdSliderController && fdSliderController.redrawAll();
+						});
 					
-								  
 						loadHTML5Widgets = true;
-						toRunAfterLoad.push('fdSliderController.redrawAll');
-							 
 					}
 					break;
+				
 				case "placeholder":
 				case "autofocus":
+					
 					if (!Modernizr.input[supportReq]) {
+						
 						loadHTML5Widgets = true;
 					}
 			}
 		}
-		
-		
-		if (toLoad.length == 0) {
-			loadWidgets();
-			
-			if(!domloaded){
 
-				// allow browsers that don't need webforms2 to handle custom error messages populated
-				// in the data-errormessage attribute
-				if (document.addEventListener) {
-					document.addEventListener('DOMContentLoaded', function(){
-						me.ExtraFeatures.init();
-					}, false);
-				}
 
-			} else {
-
-				me.ExtraFeatures.init();
-			}
-		} else {
-			yepnope({
+		yepnope({
 				load: toLoad,
+				callback: callback,
 				complete: function (){
-					loadWidgets();
-					me.ExtraFeatures.init();
-				}
-			});
-		}
-		
-		function loadWidgets() {
-			
-			yepnope({
-				test: loadHTML5Widgets,
-				yep: scriptDir + '../../shared/js/html5Widgets.js',
-				complete: function () {
-					if (loadHTML5Widgets) {
-						for (var i=0; i<toRunAfterLoad.length; i++)  {
-							eval(toRunAfterLoad[i] + '()');
+					
+					if(!domloaded){
+
+						// allow browsers that don't need webforms2 to handle custom error messages populated
+						// in the data-errormessage attribute
+						if (document.addEventListener) {
+							document.addEventListener('DOMContentLoaded', function(){
+								me.ExtraFeatures.init();
+							}, false);
 						}
-						me.EventHelpers.init();
-						html5Widgets.init();
-						//toRunAfterLoad.push('html5Widgets.init');
+
+					} else {
+
+						me.ExtraFeatures.init();
 					}
 				}
-			})
-			
-		}
+		},
+		{
+			test: loadHTML5Widgets,
+			yep: scriptDir + '../../shared/js/html5Widgets.js',
+			complete: function () {
+				if (loadHTML5Widgets) {
+					me.EventHelpers.init();
+					html5Widgets.init();
+				}
+			}
+		});
 		
 	};
 	

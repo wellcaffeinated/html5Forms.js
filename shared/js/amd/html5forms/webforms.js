@@ -65,8 +65,9 @@
 			//   webforms2 script placed beforehand in Firefox
 			var scripts = document.documentElement.getElementsByTagName('script'); 
 			for(var i = 0; i < scripts.length; i++){
-				if(match = scripts[i].src.match(/^(.*)webforms[^\/]+$/))
-					formsCSSPath = match[1];
+				if(match = scripts[i].src.match(/^(.*)webforms.js$/)){
+					formsCSSPath = match[1] + 'css/webforms2.css';
+				}
 			}
 		}
 
