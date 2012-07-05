@@ -14,8 +14,7 @@
  *
  *******************************************************************************/
 !function (name, definition) {
-    if (typeof module !== 'undefined') module.exports = definition();
-    else if (typeof define === 'function' && typeof define.amd === 'object') define(definition);
+    if (typeof define === 'function' && typeof define.amd === 'object') define(definition);
     else this.H5F[name] = definition();
 }('EventHelpers', function(){
 
@@ -341,7 +340,9 @@
          /*@end @*/
         
     }
-    if (!window.html5Forms) {
+
+    // TODO: why is this necessary? ~jasper
+    if (!window.H5F) {
     	init();
     }
 
