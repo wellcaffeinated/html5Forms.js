@@ -342,7 +342,7 @@
     }
 
     // TODO: why is this necessary? ~jasper
-    if (!window.H5F) {
+    if (!window.define && !window.H5F) {
     	init();
     }
 
