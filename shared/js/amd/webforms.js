@@ -71,7 +71,11 @@
 			callAfterDOMContentLoaded: [],
 			
 			
-			onDOMContentLoaded : function( scope ){
+			onDOMContentLoaded : function( options ){
+
+				options = options || {};
+
+				scope = options.scope;
 				
 				if($wf2.isInitialized){
 					// for dynamic content.

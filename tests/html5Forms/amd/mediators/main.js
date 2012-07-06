@@ -12,8 +12,8 @@ define(
 
 		eh.addPageLoadEvent(function(){
 		
-			wf.init( document.documentElement );
-			extra.init( document.documentElement );
+			wf.init( {scope: document.documentElement} );
+			extra.init( {scope: document.documentElement} );
 
 		}, true);
 	}

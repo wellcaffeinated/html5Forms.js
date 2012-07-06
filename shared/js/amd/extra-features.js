@@ -22,8 +22,11 @@
 		 * 2) setting up isBlank and isBlurred classes.
 		 * 3) settung up form.wf2_submitAttempted
 		 */
-		function setupExtraFeatures( parent ) {
-			parent = (parent || document.documentElement);
+		function setupExtraFeatures( options ) {
+
+			options = options || {};
+
+			parent = (options.scope || document.documentElement);
 
 			var nodeNames = ["input", "select", "textarea"];
 			for (var i=0; i<nodeNames.length; i++) {
