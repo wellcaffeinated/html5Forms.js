@@ -133,7 +133,7 @@ form:not(.wf2-keep-native-style) ::-webkit-validation-bubble-icon {
 	width: 29px;
 	height: 15px;
 	
-	background: url('validationPointer.png');
+	background: url('../images/validationPointer.png');
 	position: absolute;
 	top: -15px;
 	left: 10px;

@@ -51,25 +51,7 @@
 		) return {};
 
 		var $wf2 = {}
-			,formsCSSPath
 			;
-
-		if (require){
-
-			formsCSSPath = require.toUrl('./css/webforms2.css');
-
-		} else {
-
-			var match;
-			//For some reason, if not using documentElement, scriptaculous fails to load if reference to
-			//   webforms2 script placed beforehand in Firefox
-			var scripts = document.documentElement.getElementsByTagName('script'); 
-			for(var i = 0; i < scripts.length; i++){
-				if(match = scripts[i].src.match(/^(.*)webforms.js$/)){
-					formsCSSPath = match[1] + 'css/webforms2.css';
-				}
-			}
-		}
 
 		$wf2 = {
 			version : '0.5.4',
@@ -110,15 +92,15 @@
 					$wf2.globalEvent = document.createEvent("HTMLEvents");
 				} 
 				
-				//Include stylesheet
-				var style = document.createElement('link');
-				style.setAttribute('type', 'text/css');
-				style.setAttribute('rel', 'stylesheet');
-				style.setAttribute('href', formsCSSPath);
-				var parent = document.getElementsByTagName('head')[0];
-				if(!parent)
-					parent = document.getElementsByTagName('*')[0];
-				parent.insertBefore(style, parent.firstChild);
+				//Include stylesheet (now handled by html5forms.js)
+				// var style = document.createElement('link');
+				// style.setAttribute('type', 'text/css');
+				// style.setAttribute('rel', 'stylesheet');
+				// style.setAttribute('href', formsCSSPath);
+				// var parent = document.getElementsByTagName('head')[0];
+				// if(!parent)
+				// 	parent = document.getElementsByTagName('*')[0];
+				// parent.insertBefore(style, parent.firstChild);
 
 				//The zero point for datetime  controls is 1970-01-01T00:00:00.0Z, for datetime-local is
 				//   1970-01-01T00:00:00.0, for date controls is 1970-01-01, for month controls is 1970-01, for week

@@ -142,7 +142,8 @@
 				
 						if (!Modernizr.input.required || me.FeatureTests.badValidationImplementation || forceJSValidation) {
 							
-							loadScript(scriptDir + 'webforms.js', function(){
+							loadScript(scriptDir + cssDir + 'webforms2.css');
+							loadScript(scriptDir + moduleDir + 'webforms.js', function(){
 
 								me.$wf2.init();
 							});
@@ -235,9 +236,12 @@
 		// load the resources
 		yepnope({
 				load: toLoad,
-				callback: callback,
 				complete: function (){
 					
+					for(var url in callback){
+						callback[url]();
+					}
+
 					if(!domloaded){
 
 						// allow browsers that don't need webforms2 to handle custom error messages populated
